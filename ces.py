@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # Convex Search Algorithm
 #
@@ -9,7 +10,7 @@ import random
 def convex_search():
     population = create_pop()
     fitness_population = evaluate_pop(population)
-    print min(fitness_population)
+    print(min(fitness_population))
     while not all_equal(population): # check converged population
         if not all_equal(fitness_population):
             mating_pool = select_better_than_worst(population, fitness_population)
@@ -18,7 +19,7 @@ def convex_search():
         #print mating_pool
         population = convex_recombination_pop(mating_pool)
         fitness_population = evaluate_pop(population)
-        print min(fitness_population)
+        print(min(fitness_population))
     return (population[0], fitness_population[0]) #return first individual
 
 ### INDIVIDUAL LEVEL ###
@@ -63,4 +64,9 @@ def convex_recombination_ind(mating_pool):
 POPULATION_SIZE = 25
 INDIVIDUAL_SIZE = 10
 
-print convex_search()
+def main():
+    print(convex_search())
+
+if __name__ == '__main__':
+    main()
+
