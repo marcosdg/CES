@@ -54,10 +54,10 @@ def evaluate_ind(individual): #leading_ones
     return position
 
 def convex_recombination_ind(mating_pool):
-    transposed_mating_pool=zip(*mating_pool)
+    transposed_mating_pool = zip(*mating_pool)
     def recombine_column(col):
         return col[0] if all_equal(col) else random.randint(0, 1)
-    return map(recombine_column, transposed_mating_pool)
+    return list(map(recombine_column, transposed_mating_pool))
 
 ### EXPERIMENTS ###
 
