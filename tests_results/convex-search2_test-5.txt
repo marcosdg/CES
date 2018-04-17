@@ -1,0 +1,18 @@
+-------------------- SETTINGS --------------------
+Search algorithm: convex_search2
+Problem fitness function: leadingones_fitness
+Max runs: 10, Max gens.: 300, Pop. size: 60, Ind. size: 1000
+-------------------- START --------------------
+Runs: 1 | fitness: 447, gens.: 300
+Runs: 2 | fitness: 452, gens.: 300
+Runs: 3 | fitness: 324, gens.: 300
+Runs: 4 | fitness: 417, gens.: 300
+Runs: 5 | fitness: 446, gens.: 300
+Runs: 6 | fitness: 235, gens.: 300
+Runs: 7 | fitness: 374, gens.: 300
+Runs: 8 | fitness: 341, gens.: 300
+Runs: 9 | fitness: 445, gens.: 300
+Runs: 10 | fitness: 453, gens.: 300
+-------------------- SUMMARY --------------------
+Fitness | Max: 453, Min: 235, Avg: 393.400000, Median high: 445.000000, Stdev: 73.691851
+Generations | Max: 300, Min: 300, Avg: 300.000000, Median low: 300.000000, Stdev: 0.000000
