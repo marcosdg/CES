@@ -60,7 +60,7 @@ def create_pop():
     return [create_ind() for _ in range(POPULATION_SIZE)]
 
 def evaluate_pop(population):
-    return [onemax_fitness(individual) for individual in population]
+    return [PROBLEM_FITNESS(individual) for individual in population]
 
 #################################
 ### SELECTION META-HEURISTICS ###
@@ -73,7 +73,7 @@ def select_better_than_worst(population, fitness_population):
             if fitness > worst_fitness]
 
 def select_above_avg(population, fitness_population):
-    avg_fitness = onemax_avg_fitness()
+    avg_fitness = stats.mean(fitness_population)
     return [individual
             for (individual, fitness) in zip(population, fitness_population)
             if fitness > avg_fitness]
@@ -101,54 +101,89 @@ def convex_search():
     population = create_pop()
     fitness_population = evaluate_pop(population)
     while (not all_equal(population)) and (gens < MAX_GENERATIONS):
-        mating_pool = None
-        if any_greater_than(fitness_population, leadingones_avg_fitness()):
-            mating_pool = select_above_avg(population, fitness_population)
+        mating_pool = population
         if not all_equal(fitness_population):
             mating_pool = select_better_than_worst(
                 population,
                 fitness_population
             )
-        else:
-            mating_pool = population
         population = convex_recombination_pop(mating_pool)
         fitness_population = evaluate_pop(population)
         gens += 1
-    return fitness_population[0]
+    return (fitness_population[0], gens)
+
+def convex_search2():
+    gens = 0
+    population = create_pop()
+    fitness_population = evaluate_pop(population)
+    while (not all_equal(population)) and (gens < MAX_GENERATIONS):
+        mating_pool = population
+        avg_fitness_pop = stats.mean(fitness_population)
+        if any_greater_than(fitness_population, avg_fitness_pop):
+            mating_pool = select_above_avg(population, fitness_population)
+        elif not all_equal(fitness_population):
+            mating_pool = select_better_than_worst(
+                population,
+                fitness_population
+            )
+        population = convex_recombination_pop(mating_pool)
+        fitness_population = evaluate_pop(population)
+        gens += 1
+    return (fitness_population[0], gens)
+
+
+
 
 ############
 ### MAIN ###
 ############
 
-### (Corollary 9) Recommende population sizes for a given individual size,
-### so that convex search optimises LeadingOnes in O(n log n).
+### (Corollary 9) Recommended population sizes for a given individual size,
+### so that "normal" convex search optimises LeadingOnes in O(n log n).
 ###     - population size: 25, 40,  60,   75
 ###     - individual size: 10, 100, 1000, 10000
 
-MAX_RUNS        = 500
+SEARCH          = convex_search
+PROBLEM_FITNESS = leadingones_fitness
+MAX_RUNS        = 20
 MAX_GENERATIONS = 100
-POPULATION_SIZE = 25
+POPULATION_SIZE = 60
 INDIVIDUAL_SIZE = 1000
 
 def main():
     ### Settings
+    print("-------------------- SETTINGS --------------------")
+    print("Search algorithm: %s" % SEARCH.__name__)
+    print("Problem fitness function: %s" % PROBLEM_FITNESS.__name__)
     print("Max runs: %d, Max gens.: %d, Pop. size: %d, Ind. size: %d" %
         (MAX_RUNS, MAX_GENERATIONS, POPULATION_SIZE, INDIVIDUAL_SIZE)
     )
     ### Start
+    print("-------------------- START --------------------")
     runs = 0
     fitnesses = []
+    generations = []
     while (runs < MAX_RUNS):
-        fit = convex_search()
+        (fit, gens) = SEARCH()
         fitnesses.append(fit)
+        generations.append(gens)
         runs += 1
-        print("Runs: %d" % runs)
+        print("Runs: %d | fitness: %d, gens.: %d" % (runs, fit, gens))
     ### Results
-    print("Max: %d, Min: %d, Avg: %f, Stdev: %f" %
-        (max(fitnesses),
-         min(fitnesses),
-         stats.mean(fitnesses),
-         stats.stdev(fitnesses))
+    print("-------------------- SUMMARY --------------------")
+    print("Fitness | Max: %d, Min: %d, Avg: %f, Median high: %f, Stdev: %f"
+        % (max(fitnesses),
+           min(fitnesses),
+           stats.mean(fitnesses),
+           stats.median_high(fitnesses),
+           stats.stdev(fitnesses))
+    )
+    print("Generations | Max: %d, Min: %d, Avg: %f, Median low: %f, Stdev: %f"
+        % (max(generations),
+           min(generations),
+           stats.mean(generations),
+           stats.median_low(generations),
+           stats.stdev(generations))
     )
 
 if __name__ == '__main__':
