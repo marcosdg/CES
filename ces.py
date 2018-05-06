@@ -14,7 +14,18 @@ def all_equal(bunch):
     return all(x == first for x in bunch)
 
 def any_greater_than(bunch, threshold):
-    return any(x > threshold for x in bunch)
+    return any(x >= threshold for x in bunch)
+
+
+### Using any_two_greater_than instead of any_greater_than may be preferable
+### because it avoids constructing a mating pool of individuals above average
+### containing only a single individidual. Doing recombination only on one
+### individual can only lead to the same individual, and this might accelerate
+### premature convergence. Whereas if we have a mating pool consisting of at
+### least two different individuals, the offspring are more likely to be
+### different than parents.
+def any_two_greater_than(bunch, threshold):
+    return len(set([x for x in bunch if x >= threshold])) > 2
 
 ##################################
 ### PROBLEMS' FITNESS FUNCTION ###
@@ -76,7 +87,7 @@ def select_above_avg(population, fitness_population):
     avg_fitness = stats.mean(fitness_population)
     return [individual
             for (individual, fitness) in zip(population, fitness_population)
-            if fitness > avg_fitness]
+            if fitness >= avg_fitness]
 
 #####################
 ### RECOMBINATION ###
@@ -119,7 +130,7 @@ def convex_search2():
     while (not all_equal(population)) and (gens < MAX_GENERATIONS):
         mating_pool = population
         avg_fitness_pop = stats.mean(fitness_population)
-        if any_greater_than(fitness_population, avg_fitness_pop):
+        if any_two_greater_than(fitness_population, avg_fitness_pop):
             mating_pool = select_above_avg(population, fitness_population)
         elif not all_equal(fitness_population):
             mating_pool = select_better_than_worst(
@@ -143,12 +154,12 @@ def convex_search2():
 ###     - population size: 25, 40,  60,   75
 ###     - individual size: 10, 100, 1000, 10000
 
-SEARCH          = convex_search
+SEARCH          = convex_search2
 PROBLEM_FITNESS = leadingones_fitness
-MAX_RUNS        = 20
+MAX_RUNS        = 300
 MAX_GENERATIONS = 100
-POPULATION_SIZE = 60
-INDIVIDUAL_SIZE = 1000
+POPULATION_SIZE = 50
+INDIVIDUAL_SIZE = 100
 
 def main():
     ### Settings
